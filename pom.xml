@@ -33,7 +33,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>fully.qualified.MainClass</mainClass>
+                            <mainClass>net.skyebook.s3sync.Sync</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
