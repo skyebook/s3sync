@@ -119,7 +119,7 @@ public class SyncOperation {
                 } catch (AmazonClientException ex) {
                     retryPool.add(objectSummary);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("BAD KEY:\t" + objectSummary.getKey());
+//                    System.out.println("BAD KEY:\t" + objectSummary.getKey());
                     badKeys.add(objectSummary.getKey());
                 }
             });
@@ -162,20 +162,20 @@ public class SyncOperation {
     }
 
     private synchronized void updateCurrentLine(String newContent) {
-        System.out.println(newContent);
+//        System.out.println(newContent);
 
         // Write new content
-//        System.out.print(newContent);
-//
-//        if (newContent.length() < currentBufferLength) {
-//            for (int i = 0; i < currentBufferLength - newContent.length(); i++) {
-//                System.out.print(" ");
-//            }
-//        }
-//
-//        System.out.print("\r");
-//
-//        currentBufferLength = newContent.length();
+        System.out.print(newContent);
+
+        if (newContent.length() < currentBufferLength) {
+            for (int i = 0; i < currentBufferLength - newContent.length(); i++) {
+                System.out.print(" ");
+            }
+        }
+
+        System.out.print("\r");
+
+        currentBufferLength = newContent.length();
     }
 
     private class ProgressTask extends TimerTask {
