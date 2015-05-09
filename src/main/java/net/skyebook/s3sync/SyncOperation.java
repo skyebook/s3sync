@@ -161,18 +161,21 @@ public class SyncOperation {
     }
 
     private synchronized void updateCurrentLine(String newContent) {
+        System.out.println(newContent);
+        
+        
         // Write new content
-        System.out.print(newContent);
-
-        if (newContent.length() < currentBufferLength) {
-            for (int i = 0; i < currentBufferLength - newContent.length(); i++) {
-                System.out.print(" ");
-            }
-        }
-
-        System.out.print("\r");
-
-        currentBufferLength = newContent.length();
+//        System.out.print(newContent);
+//
+//        if (newContent.length() < currentBufferLength) {
+//            for (int i = 0; i < currentBufferLength - newContent.length(); i++) {
+//                System.out.print(" ");
+//            }
+//        }
+//
+//        System.out.print("\r");
+//
+//        currentBufferLength = newContent.length();
     }
 
     private class ProgressTask extends TimerTask {
