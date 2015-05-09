@@ -3,7 +3,9 @@ package net.skyebook.s3sync;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -107,9 +109,10 @@ public class SyncOperation {
             allObjects.parallelStream().forEach(objectSummary -> {
                 objectSummary.getKey();
                 S3Object object = client.getObject(objectSummary.getBucketName(), objectSummary.getKey());
-                object.getObjectMetadata().getUserMetadata();
                 try {
-                    PutObjectResult putObject = client.putObject(destinationBucket, object.getKey(), object.getObjectContent(), object.getObjectMetadata());
+                    PutObjectRequest request = new PutObjectRequest(destinationBucket, object.getKey(), object.getObjectContent(), object.getObjectMetadata());
+                    request.setCannedAcl(CannedAccessControlList.PublicRead);
+                    PutObjectResult putObject = client.putObject(request);
                     totalBytesSent.addAndGet(object.getObjectMetadata().getContentLength());
                     itemsCopied.incrementAndGet();
                 } catch (AmazonClientException ex) {
@@ -198,7 +201,6 @@ public class SyncOperation {
             progress.append("\t[ ").append(soFar).append("/").append(totalKeyCount).append(" ]");
 
             //progress.append("\n");
-
             long elapsed = System.currentTimeMillis() - startTime;
             long fullEstimate = (long) Math.floor(elapsed / percentage);
             long remainingEstimate = fullEstimate - elapsed;
