@@ -38,6 +38,7 @@ public class SyncOperation {
     private long sizeOfAllKeys;
 
     private List<S3ObjectSummary> retryPool;
+    private List<String> badKeys;
 
     private int currentBufferLength = 0;
 
@@ -57,6 +58,7 @@ public class SyncOperation {
 
         this.allObjects = new ArrayList<>();
         this.retryPool = new ArrayList<>();
+        this.badKeys = new ArrayList<>();
 
         this.progressTimer = new Timer();
     }
@@ -107,9 +109,8 @@ public class SyncOperation {
     public void copy() throws InterruptedException, ExecutionException {
         CompletableFuture<Void> f = CompletableFuture.runAsync(() -> {
             allObjects.parallelStream().forEach(objectSummary -> {
-                objectSummary.getKey();
-                S3Object object = client.getObject(objectSummary.getBucketName(), objectSummary.getKey());
                 try {
+                    S3Object object = client.getObject(objectSummary.getBucketName(), objectSummary.getKey());
                     PutObjectRequest request = new PutObjectRequest(destinationBucket, object.getKey(), object.getObjectContent(), object.getObjectMetadata());
                     request.setCannedAcl(CannedAccessControlList.PublicRead);
                     PutObjectResult putObject = client.putObject(request);
@@ -117,6 +118,8 @@ public class SyncOperation {
                     itemsCopied.incrementAndGet();
                 } catch (AmazonClientException ex) {
                     retryPool.add(objectSummary);
+                } catch (IllegalArgumentException e) {
+                    badKeys.add(objectSummary.getKey());
                 }
             });
         }, forkJoinPool);
@@ -124,6 +127,13 @@ public class SyncOperation {
         progressTimer.scheduleAtFixedRate(new ProgressTask(), 0, 2 * 1000);
 
         f.get();
+
+        System.out.println("");
+        System.out.println("BAD KEYS:");
+        for (String key : badKeys) {
+            System.out.println("\t" + key);
+        }
+        System.out.println("END BAD KEYS");
 
         // Run anything that needs to be retried
         if (!retryPool.isEmpty()) {
