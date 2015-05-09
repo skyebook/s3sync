@@ -119,6 +119,7 @@ public class SyncOperation {
                 } catch (AmazonClientException ex) {
                     retryPool.add(objectSummary);
                 } catch (IllegalArgumentException e) {
+                    System.out.println("BAD KEY:\t" + objectSummary.getKey());
                     badKeys.add(objectSummary.getKey());
                 }
             });
@@ -162,8 +163,7 @@ public class SyncOperation {
 
     private synchronized void updateCurrentLine(String newContent) {
         System.out.println(newContent);
-        
-        
+
         // Write new content
 //        System.out.print(newContent);
 //
