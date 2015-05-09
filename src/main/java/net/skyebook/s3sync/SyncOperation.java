@@ -118,7 +118,7 @@ public class SyncOperation {
                     itemsCopied.incrementAndGet();
                 } catch (AmazonClientException ex) {
                     retryPool.add(objectSummary);
-                } catch (IllegalArgumentException e) {
+                } catch (Exception e) {
 //                    System.out.println("BAD KEY:\t" + objectSummary.getKey());
                     badKeys.add(objectSummary.getKey());
                 }
