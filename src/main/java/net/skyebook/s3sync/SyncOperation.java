@@ -161,16 +161,17 @@ public class SyncOperation {
     }
 
     private synchronized void updateCurrentLine(String newContent) {
-        StringBuilder backspaces = new StringBuilder();
-        for (int i = 0; i < currentBufferLength; i++) {
-            backspaces.append("\b");
-        }
-
-        // Clear the current buffer
-        System.out.print(backspaces.toString());
-
         // Write new content
         System.out.print(newContent);
+
+        if (newContent.length() < currentBufferLength) {
+            for (int i = 0; i < currentBufferLength - newContent.length(); i++) {
+                System.out.print(" ");
+            }
+        }
+
+        System.out.print("\r");
+
         currentBufferLength = newContent.length();
     }
 
